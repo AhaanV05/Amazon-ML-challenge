@@ -1,0 +1,776 @@
+<title>Entity Resolution Game Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,600..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+:root {
+  --ground: #F2F4F6;
+  --surface: #FFFFFF;
+  --ink: #16202B;
+  --ink-2: #3A4857;
+  --muted: #647487;
+  --rule: #D6DDE4;
+  --rule-strong: #B9C4CF;
+  --accent: #2B4FA0;
+  --accent-soft: #E3E9F6;
+  --s1: #2B4FA0;
+  --s2: #A85A17;
+  --s3: #2C7552;
+  --mark: #FBEBC8;
+  --code-bg: #E9EDF1;
+  --display: "Archivo", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --ground: #0F151C;
+    --surface: #161E27;
+    --ink: #E4EAF0;
+    --ink-2: #BAC5D1;
+    --muted: #8D9AAA;
+    --rule: #2A3542;
+    --rule-strong: #3B4959;
+    --accent: #93ADEF;
+    --accent-soft: #1E2A42;
+    --s1: #93ADEF;
+    --s2: #E3A064;
+    --s3: #77C59F;
+    --mark: #4A3A17;
+    --code-bg: #1C2632;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ground: #0F151C;
+  --surface: #161E27;
+  --ink: #E4EAF0;
+  --ink-2: #BAC5D1;
+  --muted: #8D9AAA;
+  --rule: #2A3542;
+  --rule-strong: #3B4959;
+  --accent: #93ADEF;
+  --accent-soft: #1E2A42;
+  --s1: #93ADEF;
+  --s2: #E3A064;
+  --s3: #77C59F;
+  --mark: #4A3A17;
+  --code-bg: #1C2632;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.6;
+}
+.wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding-inline: 24px;
+  padding-block: 40px 96px;
+}
+@media (max-width: 600px) { .wrap { padding-inline: 16px; padding-block: 24px 64px; } }
+
+h1, h2, h3 { font-family: var(--display); font-stretch: 112%; text-wrap: balance; margin: 0; color: var(--ink); }
+h1 { font-size: clamp(2.1rem, 5vw, 3.4rem); font-weight: 800; line-height: 1.02; letter-spacing: -0.01em; }
+h2 { font-size: 1.65rem; font-weight: 700; line-height: 1.15; }
+h3 { font-size: 1.12rem; font-weight: 700; line-height: 1.3; font-stretch: 105%; }
+p { margin: 0; }
+a { color: var(--accent); text-underline-offset: 3px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+code, .mono { font-family: var(--mono); font-size: 0.86em; }
+:not(pre) > code { background: var(--code-bg); padding: 0.1em 0.35em; border-radius: 3px; overflow-wrap: anywhere; }
+strong { font-weight: 600; }
+.eyebrow {
+  font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+}
+
+/* Header */
+header.top { display: grid; gap: 20px; padding-bottom: 36px; border-bottom: 1px solid var(--rule); }
+.lede { font-size: 1.15rem; line-height: 1.55; color: var(--ink-2); max-width: 68ch; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px 28px; font-size: 0.9rem; color: var(--ink-2); }
+.facts div { display: flex; flex-direction: column; gap: 2px; }
+.facts b { font-family: var(--mono); font-weight: 500; font-size: 0.72rem; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); }
+
+/* Layout */
+.layout { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 56px; padding-top: 36px; }
+nav.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 24px); align-self: start; font-size: 0.88rem; }
+nav.toc ol { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 2px; }
+nav.toc a { display: block; padding: 4px 0 4px 10px; border-left: 2px solid var(--rule); color: var(--ink-2); text-decoration: none; line-height: 1.35; }
+nav.toc a:hover { color: var(--accent); border-left-color: var(--accent); }
+main { display: grid; gap: 64px; min-width: 0; }
+section { display: grid; gap: 18px; scroll-margin-top: 24px; }
+section > p, section > ul, section > ol, .prose { max-width: 72ch; }
+.section-head { display: grid; gap: 6px; }
+ul, ol { margin: 0; padding-left: 1.25em; display: grid; gap: 6px; }
+@media (max-width: 900px) {
+  .layout { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  nav.toc { position: static; }
+  nav.toc ol { display: flex; flex-wrap: wrap; gap: 6px 8px; }
+  nav.toc a { border: 1px solid var(--rule); border-radius: 999px; padding: 3px 10px; background: var(--surface); }
+}
+
+/* TSV sample */
+.tsv-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; }
+table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+.tsv { font-family: var(--mono); font-size: 0.8rem; min-width: 760px; }
+.tsv th, .tsv td { padding: 8px 12px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+.tsv th { font-weight: 500; color: var(--muted); background: var(--code-bg); }
+.tsv tr.gap td { border-bottom: 2px solid var(--rule-strong); }
+.tsv tr:last-child td { border-bottom: 0; }
+.id { font-weight: 500; }
+.id.s1 { color: var(--s1); } .id.s2 { color: var(--s2); } .id.s3 { color: var(--s3); }
+mark { background: var(--mark); color: inherit; padding: 0 2px; border-radius: 2px; }
+.caption { font-size: 0.85rem; color: var(--muted); max-width: 80ch; }
+
+/* Thesis list */
+.thesis { list-style: none; padding: 0; counter-reset: t; display: grid; gap: 0; max-width: 80ch; border-top: 1px solid var(--rule); }
+.thesis li { counter-increment: t; display: grid; grid-template-columns: 2.2rem 1fr; gap: 4px 12px; padding: 16px 0; border-bottom: 1px solid var(--rule); }
+.thesis li::before { content: counter(t); font-family: var(--display); font-weight: 800; font-size: 1.4rem; color: var(--accent); line-height: 1.2; }
+.thesis strong { display: block; font-size: 1.02rem; }
+.thesis span { color: var(--ink-2); }
+
+/* Pipeline rail */
+.rail { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 0; counter-reset: st; }
+.rail li { counter-increment: st; position: relative; padding: 14px 12px 14px 0; border-top: 3px solid var(--accent); display: grid; gap: 4px; align-content: start; }
+.rail li::before { content: "0" counter(st); font-family: var(--mono); font-size: 0.72rem; color: var(--accent); letter-spacing: 0.06em; }
+.rail li b { font-family: var(--display); font-stretch: 108%; font-size: 0.98rem; line-height: 1.2; }
+.rail li span { font-size: 0.8rem; color: var(--muted); line-height: 1.4; }
+.rail li .out { font-family: var(--mono); font-size: 0.72rem; color: var(--ink); background: var(--accent-soft); padding: 2px 6px; border-radius: 3px; justify-self: start; margin-top: 4px; }
+@media (max-width: 1000px) { .rail { grid-template-columns: repeat(4, minmax(0, 1fr)); row-gap: 18px; } }
+@media (max-width: 560px) {
+  .rail { grid-template-columns: minmax(0, 1fr); row-gap: 0; }
+  .rail li { border-top: 0; border-left: 3px solid var(--accent); padding: 8px 0 12px 14px; }
+}
+
+/* Data tables */
+.table-wrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: 6px; background: var(--surface); }
+.data th, .data td { padding: 10px 14px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--rule); }
+.data thead th { font-family: var(--mono); font-weight: 500; font-size: 0.72rem; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); background: var(--code-bg); white-space: nowrap; }
+.data tbody tr:last-child td { border-bottom: 0; }
+.data td:first-child { font-weight: 500; }
+.data.wide { min-width: 720px; }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.data td.num { text-align: right; }
+.win { font-weight: 600; color: var(--accent); }
+
+/* Sub-blocks within a stage */
+.block { display: grid; gap: 12px; padding-top: 18px; border-top: 1px dashed var(--rule-strong); }
+.section-head + .block { border-top: 0; padding-top: 0; }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 32px; }
+@media (max-width: 720px) { .two { grid-template-columns: minmax(0, 1fr); } }
+.two > div { display: grid; gap: 8px; align-content: start; }
+
+.callout { background: var(--accent-soft); border-radius: 6px; padding: 14px 18px; max-width: 80ch; display: grid; gap: 6px; }
+.callout .eyebrow { color: var(--accent); }
+
+pre { margin: 0; background: var(--code-bg); border-radius: 6px; padding: 14px 16px; overflow-x: auto; font-family: var(--mono); font-size: 0.8rem; line-height: 1.55; color: var(--ink); max-width: 100%; }
+.kw { color: var(--accent); } .cm { color: var(--muted); }
+
+/* Chips */
+.chip { display: inline-block; font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.05em; text-transform: uppercase; padding: 2px 7px; border-radius: 3px; white-space: nowrap; }
+.chip.hi { background: var(--accent); color: var(--surface); }
+.chip.md { border: 1px solid var(--accent); color: var(--accent); }
+.chip.lo { border: 1px solid var(--rule-strong); color: var(--muted); }
+.chip.src1 { border: 1px solid var(--s1); color: var(--s1); }
+
+/* Timeline */
+.days { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+@media (max-width: 980px) { .days { grid-template-columns: minmax(0, 1fr); } }
+.day { background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 18px; display: grid; gap: 12px; align-content: start; }
+.day header { display: grid; gap: 2px; }
+.day header .eyebrow { color: var(--accent); }
+.day ol { list-style: none; padding: 0; gap: 10px; }
+.day li { display: grid; grid-template-columns: 5.4rem 1fr; gap: 10px; font-size: 0.9rem; line-height: 1.45; }
+.day li .num { color: var(--muted); font-size: 0.78rem; padding-top: 2px; }
+
+/* Submission slots */
+.slots { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.slot { border: 1px solid var(--rule); border-radius: 5px; padding: 10px; background: var(--surface); display: grid; gap: 4px; align-content: start; min-height: 84px; }
+.slot .num { font-size: 0.72rem; color: var(--muted); }
+.slot b { font-size: 0.85rem; line-height: 1.3; font-weight: 600; }
+.slot.spare { background: transparent; border-style: dashed; }
+.slot.final { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.slot-day { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); grid-column: 1 / -1; margin-top: 6px; }
+@media (max-width: 720px) { .slots { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* Checklist */
+.checks { list-style: none; padding: 0; gap: 8px; max-width: 80ch; }
+.checks li { display: grid; grid-template-columns: 1.2rem 1fr; gap: 10px; }
+.checks li::before { content: ""; width: 0.85rem; height: 0.85rem; border: 1.5px solid var(--rule-strong); border-radius: 2px; margin-top: 0.35em; }
+
+footer.end { border-top: 1px solid var(--rule); padding-top: 20px; font-size: 0.85rem; color: var(--muted); max-width: 80ch; }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <span class="eyebrow">Amazon ML Challenge 2026 · Business Entity Resolution</span>
+    <h1>Entity Resolution Game Plan</h1>
+    <p class="lede">Link every Source&nbsp;1 business to its noisy copies in Sources&nbsp;2 and&nbsp;3, scored by per-entity F<sub>0.5</sub>. The plan: high-recall blocking, a feature-rich pairwise model, context features that see the whole candidate graph, and a decoder that picks, for each entity, the answer set with the highest expected score.</p>
+    <div class="facts">
+      <div><b>Window</b>Fri 25 Sep 00:00 → Sun 27 Sep 23:59 IST</div>
+      <div><b>Leaderboard budget</b>5 per day, 15 total</div>
+      <div><b>Model limit</b>MIT or Apache-2.0, ≤ 8B params</div>
+      <div><b>Hard rule</b>No external data lookups</div>
+      <div><b>Final review</b>Smaller candidate sets rank higher</div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="Contents">
+      <span class="eyebrow">Contents</span>
+      <ol>
+        <li><a href="#data">What the data says</a></li>
+        <li><a href="#points">Where the points are</a></li>
+        <li><a href="#pipeline">Pipeline</a></li>
+        <li><a href="#eda">Hour-zero checks</a></li>
+        <li><a href="#normalize">Normalize</a></li>
+        <li><a href="#blocking">Blocking</a></li>
+        <li><a href="#features">Pair features</a></li>
+        <li><a href="#models">Models</a></li>
+        <li><a href="#decode">Decoding</a></li>
+        <li><a href="#france">France</a></li>
+        <li><a href="#validation">Validation</a></li>
+        <li><a href="#timeline">Timeline</a></li>
+        <li><a href="#submissions">Submissions</a></li>
+        <li><a href="#priorities">Priorities</a></li>
+        <li><a href="#compliance">Compliance</a></li>
+        <li><a href="#risks">Risks</a></li>
+        <li><a href="#questions">Open questions</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <!-- WHAT THE DATA LOOKS LIKE -->
+      <section aria-labelledby="sample-h">
+        <div class="section-head">
+          <span class="eyebrow">The problem in five rows</span>
+          <h2 id="sample-h">One business, three sources, no shared key</h2>
+        </div>
+        <div class="tsv-wrap">
+          <table class="tsv">
+            <thead><tr><th>entity_id</th><th>business_name</th><th>business_address</th><th>country</th></tr></thead>
+            <tbody>
+              <tr><td class="id s1">S1-00417</td><td>Shree Ganesh Traders Pvt Ltd</td><td>14 MG Road, Bengaluru, Karnataka 560001</td><td>India</td></tr>
+              <tr><td class="id s2">S2-01983</td><td><mark>Sri</mark> Ganesh Traders <mark>Private Limited</mark></td><td>14, <mark>M.G. Rd</mark>, <mark>Near Metro Stn</mark>, <mark>Bangalore</mark></td><td>India</td></tr>
+              <tr class="gap"><td class="id s3">S3-00552</td><td>Ganesh Traders</td><td><mark>#14 Mahatma Gandhi Road</mark>, Bengaluru <mark>560 001</mark></td><td>India</td></tr>
+              <tr><td class="id s1">S1-02210</td><td>Boulangerie Dupont SARL</td><td>12 rue de la Paix, 75002 Paris</td><td>France</td></tr>
+              <tr><td class="id s3">S3-04471</td><td><mark>Dupont Boulangerie</mark></td><td>12 <mark>R.</mark> de la Paix, Paris</td><td>France</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="caption">Illustrative rows, not from the dataset. Highlighted: transliteration (Shree/Sri, Bengaluru/Bangalore), legal-suffix expansion, abbreviation (MG, Rd, R.), a landmark reference, a split PIN code, a dropped postcode and word-order swap. France appears only in the test set.</p>
+      </section>
+
+      <!-- DATA FINDINGS -->
+      <section id="data" aria-labelledby="data-h">
+        <div class="section-head">
+          <span class="eyebrow">Measured on the real data, 26 Sep</span>
+          <h2 id="data-h">What the data says</h2>
+        </div>
+        <div class="table-wrap">
+          <table class="data wide">
+            <thead><tr><th>Finding</th><th>Number</th><th>What it changes</th></tr></thead>
+            <tbody>
+              <tr><td>Size</td><td class="num">Train 2.2M / 5.0M / 5.3M · Test 1.73M / 4.89M / 5.08M</td><td>Every step must be sub-quadratic and memory-aware on a 15 GB laptop</td></tr>
+              <tr><td>Test countries</td><td class="num">India 47% · US 38% · France 15%</td><td>259k French test entities with no training labels</td></tr>
+              <tr><td>Matches per S1 entity</td><td class="num">mean 3.46 · singletons 5.6%</td><td>Missed matches cost more than the "precision-heavy" framing suggests</td></tr>
+              <tr><td>Records under two S1 entities</td><td class="num">0</td><td>One-owner rule is safe; reverse cap r = 1–2</td></tr>
+              <tr><td>S2/S3 records matching no S1</td><td class="num">≈ 26%</td><td>A quarter of the searched records are distractors</td></tr>
+              <tr><td>Country agreement on true pairs</td><td class="num">100%</td><td>Search within each country</td></tr>
+              <tr><td>Postcode present</td><td class="num">US 12% · India 1%</td><td>Postcode cannot anchor search</td></tr>
+              <tr><td>Best single signal (AUC vs hard negatives)</td><td class="num">address 0.95 · India name 0.72–0.75</td><td>Some true matches have scrambled names; every true pair keeps either name or address ≥ 40/100</td></tr>
+              <tr><td>S1 entities sharing an address</td><td class="num">≈ 5% (France 11%)</td><td>Address is close to an identifier</td></tr>
+              <tr><td>Indic scripts in S2/S3</td><td class="num">9 scripts, ≈ 9% of names</td><td>Own transliterator scored best on 9,971 true pairs (71.5 vs anyascii 70.5 vs indic-transliteration 65.0)</td></tr>
+              <tr><td>Retrieval recall, top 50, all routes</td><td class="num">India 98.5% / 97.4% · US 99.0% / 99.3%</td><td>Three routes kept: name@place composite keys, address, joint name+address</td></tr>
+              <tr><td>First model (stage 1 LightGBM), validation</td><td class="num">macro F0.5 0.954 · 6.7 candidates per entity</td><td>Ceiling after the filter is 0.9835; the 3-point gap is in matching, so a cross-encoder lane was added</td></tr>
+              <tr><td>Cross-encoder (xlm-roberta-base), held-out pairs</td><td class="num">AUC 0.9996 · log-loss 0.026</td><td>Stage 2 validation 0.9618 → 0.9741 with <code>ce_logit</code></td></tr>
+              <tr><td>Public leaderboard</td><td class="num">v1 0.944 · v2 0.962 · v3 0.9773 · v4 0.9772 · v5+post 0.9790 · <b>v7 0.9798 (final)</b></td><td>Once every train entity was processed like test (v3), India/US on the leaderboard matched validation. The remaining gap is France and recall. Around rank 500 the board sat at 0.983; the top was above 0.99</td></tr>
+              <tr><td>France, measured on the leaderboard</td><td class="num">~0.93 (v3/v4) → ~0.942 (v7)</td><td>A probe emptying 10% of French entities measured the France score. Gains came from a sibling bridge (+0.0010 on validation, recovering domains, initials and aliases that crowded French candidate lists had dropped) and suffix/near-copy rules. Claiming French word swaps cost −0.0029 in a France-only A/B</td></tr>
+              <tr><td>Final matcher</td><td class="num">validation 0.9870 on 441k entities</td><td>Two-fold cross-encoders plus Qwen3-Reranker-4B (neutral on validation), and LightGBM on 100% of train entities (+0.0005), with post-processing: <code>bridge</code>, <code>france_suffix</code>, <code>france_swap</code></td></tr>
+              <tr><td>Competition per record, train vs test</td><td class="num">~4 vs ~12 entities per record</td><td>Training used 20% of S1 as queries; test uses 100%. v3 runs every train entity through the pipeline on the G4 machine and loosens the filter to ≤16 candidates (ceiling ~0.990)</td></tr>
+              <tr><td>What search misses (40k train entities, top 20)</td><td class="num">ceiling 0.9928 · 92% of misses outranked, 8% no shared word</td><td>Misses cluster in records with no address, domain-style names and Indic names with short addresses. v3 adds a name-only character route over just those records: ceiling 0.9953 for ~20 extra pairs per entity before the filter. An off-the-shelf embedding route (multilingual-e5-small) adds India S2 pair recall 0.9822 → 0.9862, mostly Indic names; decided after v3's leaderboard score</td></tr>
+              <tr><td>Zero-padded house numbers in S2/S3</td><td class="num">≈ 5% of addresses ("0338")</td><td>Stripping leading zeros cuts true pairs with a false number conflict from 5.2% to 4.2%</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- THESIS -->
+      <section id="points" aria-labelledby="points-h">
+        <div class="section-head">
+          <span class="eyebrow">Reading the metric</span>
+          <h2 id="points-h">Where the points are</h2>
+        </div>
+        <ol class="thesis">
+          <li><div><strong>Every Source 1 entity is worth exactly one point.</strong><span>F<sub>0.5</sub> is computed per entity and averaged. An entity with seven true matches counts the same as a singleton. We optimize decisions per entity, not per pair.</span></div></li>
+          <li><div><strong>Singletons are free points or instant zeros.</strong><span>An empty list on a true singleton scores 1.0; predicting anything scores 0.0. An empty list on an entity that does have matches also scores 0.0. The empty-or-not decision is its own problem.</span></div></li>
+          <li><div><strong>Precision counts double, but not blindly.</strong><span>Once the first match is at 0.9, a second one needs about 0.66 to be worth adding. Yet with three candidates at 0.4 each, predicting all three beats predicting none. A single global threshold gets both cases wrong.</span></div></li>
+          <li><div><strong>Blocking sets the ceiling, and its size is judged.</strong><span>A match that never becomes a candidate can never be predicted, and since 26 Sep the organizers rank smaller candidate sets higher at the final review. Retrieve wide inside the pipeline, then cut with a learned filter to the smallest set that keeps validation F<sub>0.5</sub>.</span></div></li>
+          <li><div><strong>France is the hidden exam.</strong><span>It has zero training rows but counts like every other test entity. Every feature must work for a country the model never saw, and leave-one-country-out validation is how we prove it.</span></div></li>
+        </ol>
+      </section>
+
+      <!-- PIPELINE -->
+      <section id="pipeline" aria-labelledby="pipeline-h">
+        <div class="section-head">
+          <span class="eyebrow">Architecture</span>
+          <h2 id="pipeline-h">Eight stages, two output files</h2>
+        </div>
+        <ol class="rail">
+          <li><b>Normalize</b><span>Clean text, split legal form, parse address parts</span></li>
+          <li><b>Retrieve</b><span>Three sparse TF-IDF routes per country: name@place, address, joint; never exported</span></li>
+          <li><b>Filter</b><span>Cheap learned filter cuts to a small adaptive set, possibly empty</span><span class="out">candidate_pairs.tsv</span></li>
+          <li><b>Pair features</b><span>Name, address, commonness and provenance signals, grown by family</span></li>
+          <li><b>Stage-1 models</b><span>LightGBM (as built; CatBoost dropped), cross-encoder scores as features</span></li>
+          <li><b>Context features</b><span>Ranks, competition, cross-source triangles</span></li>
+          <li><b>Stage-2 model</b><span>GBDT on everything, calibrated</span></li>
+          <li><b>Decode</b><span>One S1 per record, then expected-F<sub>0.5</sub> subset per entity</span><span class="out">matching_results.tsv</span></li>
+        </ol>
+        <p>The candidate file is the filter's output, which is exactly what stages 4 to 8 score. Every predicted match is therefore a candidate by construction, which the validator checks. The retrieval union stays internal, because the organizers define the candidate file as the last filtering stage.</p>
+      </section>
+
+      <!-- EDA -->
+      <section id="eda" aria-labelledby="eda-h">
+        <div class="section-head">
+          <span class="eyebrow">First two hours</span>
+          <h2 id="eda-h">Hour-zero checks that change the plan</h2>
+        </div>
+        <p>The dataset isn't downloaded yet, so parts of this plan are conditional. Answer these eleven questions before writing a model. Each answer switches a design decision on or off.</p>
+        <div class="table-wrap">
+          <table class="data wide">
+            <thead><tr><th>Question</th><th>How to check</th><th>What the answer decides</th></tr></thead>
+            <tbody>
+              <tr><td>Does any S2/S3 id appear under two S1 entities in ground truth?</td><td>Explode <code>matched_entity_ids</code>, count ids</td><td>If never (expected, since S1 is deduplicated): each S2/S3 record goes to at most one S1 at decode time. A large precision gain.</td></tr>
+              <tr><td>How many matches per entity, per source?</td><td>Histogram of #S2 and #S3 per S1 row</td><td>Mostly ≤ 1 per source: a strong "best one per source" prior. Often several: sources hold internal duplicates, so add S2↔S2 and S3↔S3 similarity features.</td></tr>
+              <tr><td>What share of S1 entities are singletons?</td><td>Share of empty rows in ground truth</td><td>The prior for the empty-list decision. Compare it with the predicted singleton rate on test as a sanity check.</td></tr>
+              <tr><td>Are there S2/S3 records matched to no S1 entity?</td><td>Set difference of ids</td><td>None: every record belongs somewhere, so global assignment is safe. Many: they are distractors, keep the singleton gate strict.</td></tr>
+              <tr><td>Do matched records always share a country label?</td><td>Compare <code>country</code> across ground-truth pairs</td><td>Always: block within country (large speed-up). Not always: use country only as a soft "same country" feature.</td></tr>
+              <tr><td>How is each country spelled in all six files?</td><td>Value counts per file</td><td>Normalize labels. Confirm France appears in test S1, S2 and S3, or the country filter will silently drop it.</td></tr>
+              <tr><td>How do S2 and S3 differ?</td><td>Per source: field lengths, missing postcodes, abbreviation rate, similarity to S1 on true pairs</td><td>Different noise profiles: add <code>source</code> as a feature, or train one model per source.</td></tr>
+              <tr><td>How often do postcodes agree on true pairs?</td><td>Extract 5–6 digit codes, compare</td><td>How far to trust postcode as near-hard evidence.</td></tr>
+              <tr><td>Do id numbers or row order leak matches?</td><td>Correlate id numbers across true pairs</td><td>If they do, never use it (it fails the fair-play review), but check that validation isn't benefiting by accident.</td></tr>
+              <tr><td>How big is it?</td><td>Row counts per file</td><td>Compute tier (CPU only or GPU cross-encoder) and the candidate cap K.</td></tr>
+              <tr><td>How many exact duplicates after normalization?</td><td>Join on normalized name + address</td><td>A fast path for near-certain matches, and a feature.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="block">
+          <h3>Read the TSVs safely</h3>
+          <p class="prose">Business names can contain quotes and strings like "NA". Default pandas settings can turn those into missing values or merge rows. Read everything as text and compare row counts with line counts once.</p>
+<pre><span class="kw">import</span> csv, pandas <span class="kw">as</span> pd
+READ = dict(sep=<span class="kw">"\t"</span>, dtype=str, keep_default_na=<span class="kw">False</span>, quoting=csv.QUOTE_NONE, encoding=<span class="kw">"utf-8"</span>)
+s1 = pd.read_csv(<span class="kw">"dataset/train/train_source1.tsv"</span>, **READ)
+<span class="cm"># writing on Windows: force \n line endings, no quoting, empty string for singletons</span>
+out.to_csv(<span class="kw">"output/matching_results.tsv"</span>, sep=<span class="kw">"\t"</span>, index=<span class="kw">False</span>,
+           lineterminator=<span class="kw">"\n"</span>, quoting=csv.QUOTE_NONE, encoding=<span class="kw">"utf-8"</span>)</pre>
+        </div>
+      </section>
+
+      <!-- NORMALIZE -->
+      <section id="normalize" aria-labelledby="normalize-h">
+        <div class="section-head">
+          <span class="eyebrow">Stage 01</span>
+          <h2 id="normalize-h">Normalize: two views of every field</h2>
+        </div>
+        <p>Keep a lightly cleaned view (lowercase, whitespace fixed) and a fully normalized view of each field. Compute similarities on both and let the model decide which one to trust. Aggressive normalization helps on seen noise and can hurt on France, and keeping both views protects us.</p>
+        <div class="two">
+          <div>
+            <h3>Business name</h3>
+            <ul>
+              <li>Unicode NFKD, strip accents with the standard library (é→e, ç→c). Lowercase, unify punctuation, <code>&amp;</code>→<code>and</code>.</li>
+              <li>Split the <strong>legal form</strong> from the <strong>core name</strong>: inc, llc, corp, co, ltd, lp, llp · pvt, private, limited, opc · sarl, sas, sasu, sa, eurl, snc, sci, cie, ets, sté. Output the core name, a canonical legal form, and a flag for its presence.</li>
+              <li><strong>Trade names</strong>: split on dba, d/b/a, t/a, trading as, aka and parentheses. Name similarity is the max over the alternatives.</li>
+              <li><strong>Transliteration skeleton</strong>: sri/shri/shree→sri, ph→f, ee→i, oo→u, w→v, drop inner vowels, collapse doubled letters. "Aggarwal" and "Agarwal" become the same key.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Business address</h3>
+            <ul>
+              <li><strong>Postcode</strong>: last 6-digit (India, join "560 001"), or 5-digit (US ZIP, French code postal). ZIP+4 reduces to 5 digits.</li>
+              <li><strong>Premise numbers</strong>: all other numbers, including 12bis, #14, "plot no 45", "no. 7", kept as a set.</li>
+              <li><strong>Landmarks</strong>: near, nr, opp, opposite, behind, beside, next to, en face de … up to the next comma. Move them to their own field and out of the main address.</li>
+              <li><strong>Units</strong> (suite, apt, floor, flat) go to their own field. The last two or three comma segments form the city/state tail.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="block">
+          <h3>Mine the abbreviation table from the training pairs</h3>
+          <p class="prose">The noise was generated by some process, and training pairs show its substitution table. For each true pair, align tokens and count substitutions where one token is a prefix or subsequence of the other (rd↔road, pvt↔private, intl↔international). Keep the frequent ones as the canonical map, plus a small hand seed list. Mine inside each training fold: mining on every training pair leaks the held-out entities into validation. Resolve "St" by position: before a proper name it is Saint (Rue St Denis), after a street name it is Street (Main St). For France, apply the same prefix rule to unlabeled test records: short tokens that are prefixes of frequent longer tokens in the same country (av→avenue, bd→boulevard). That uses only provided data.</p>
+        </div>
+      </section>
+
+      <!-- BLOCKING -->
+      <section id="blocking" aria-labelledby="blocking-h">
+        <div class="section-head">
+          <span class="eyebrow">Stages 02 – 03</span>
+          <h2 id="blocking-h">Blocking: retrieve wide, filter small</h2>
+        </div>
+        <p>Since 26 Sep, candidate-set size counts in the final ranking: the organizers review <code>candidate_pairs.tsv</code> and the code behind it, and rank smaller sets per S1 entity higher. Blocking is therefore two stages. <strong>Retrieval</strong> casts a wide net (≥ 99.5% pair recall) that is never exported. A <strong>learned filter</strong> then cuts each entity's list to the smallest set that keeps validation F<sub>0.5</sub>, and that filtered set is the candidate file. Block within country if the hour-zero check allows it, and query S2 and S3 separately.</p>
+        <div class="table-wrap">
+          <table class="data wide">
+            <thead><tr><th>Blocker</th><th>How</th><th>What it catches</th></tr></thead>
+            <tbody>
+              <tr><td>A · Name char n-grams</td><td>TF-IDF on core name, char_wb 2–4, sublinear tf. Top-k by cosine via chunked sparse matrix products.</td><td>Typos, reordering, abbreviations</td></tr>
+              <tr><td>B · Name + address words</td><td>Word TF-IDF with IDF fitted per country on all records, test included</td><td>Chain stores where the address carries the signal</td></tr>
+              <tr><td>C · Address only</td><td>Char TF-IDF on the address without landmarks</td><td>Renamed or DBA businesses at the same address</td></tr>
+              <tr><td>D · Dense embeddings</td><td>Multilingual sentence model (<code>multilingual-e5-base</code>, MIT, or <code>Qwen3-Embedding-0.6B</code>, Apache-2.0) on "name | address", FAISS inner product. Fine-tune on Day 2 with MultipleNegativesRankingLoss using TF-IDF hard negatives.</td><td>Transliteration and semantic variants. Multilingual, so France isn't a cold start. A dense neighbor can be the same kind of business rather than the same one, so this route only proposes candidates and features.</td></tr>
+              <tr><td>E · Exact keys</td><td>(postcode, first 3 chars of skeleton), acronym, sorted rare tokens, (premise number, street skeleton)</td><td>Cheap high-precision catches the similarity blockers rank low</td></tr>
+              <tr><td>F · Reverse direction</td><td>For each S2/S3 record, its top-k S1 entities</td><td>Records crowded out of a busy entity's list</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="block">
+          <h3>The learned filter, the last blocking stage</h3>
+          <ul>
+            <li><strong>Inputs are retrieval-time signals only</strong>: which routes hit, rank and score in each, reverse rank, exact-key hits, plus a few cheap checks (postcode equal, a shared premise number, name TF-IDF cosine). A small LightGBM trained inside the training folds predicts P(match).</li>
+            <li><strong>Keep rule</strong> per pair: filter probability ≥ τ, the S2/S3 record is among its own top r anchors, and at most K<sub>max</sub> per entity and source. Because a record belongs to at most one S1 entity, r = 1–3 cuts chains hard. An entity may end with no candidates, which is a free and correct call for most singletons.</li>
+            <li><strong>Choose τ, r and K<sub>max</sub> on a curve.</strong> Run the full downstream pipeline out of fold and plot validation macro F<sub>0.5</sub> against mean candidates per S1 entity. Take the knee, the smallest sets before F<sub>0.5</sub> starts to drop, and put the curve in the methodology.</li>
+            <li><strong>Keep the line between blocking and matching clear.</strong> The filter uses only cheap signals and is tuned for recall at small size; everything from pair features onward is the matching model. A filter that effectively makes the final decision would turn the candidate file into the answers, and reviewers read the code.</li>
+          </ul>
+        </div>
+        <div class="block">
+          <h3>Measure what the reviewers will measure</h3>
+          <ul>
+            <li>On every run: mean, median, p95 and max candidates per S1 entity; share of entities with no candidates; pair recall after the filter; reduction ratio against all same-country pairs; each route's <em>unique</em> recall contribution.</li>
+            <li>Keep every route sub-quadratic: hash keys, inverted indexes or approximate nearest neighbours, never a dense N×M similarity matrix or all pairs inside a block. Cap oversized key blocks, such as a very common postcode. State each route's complexity in the methodology, since the organizers frame blocking as a billions-of-records problem.</li>
+            <li>Track the <strong>oracle ceiling</strong>: the macro F<sub>0.5</sub> a perfect classifier would reach on these candidates. For an entity with m true matches of which c were retrieved, it is 1.25c / (c + 0.25m), and 1 for a singleton. It prices blocking misses in the metric's own units.</li>
+            <li>Why B, C and F exist: a chain like Starbucks can appear hundreds of times in S1. Name-only blocking returns an arbitrary 20 of them.</li>
+            <li>Records with identical text under several ids: compute features once, then expand back to every id. The metric expects all of them.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- FEATURES -->
+      <section id="features" aria-labelledby="features-h">
+        <div class="section-head">
+          <span class="eyebrow">Stage 04</span>
+          <h2 id="features-h">Pair features, grown in families</h2>
+        </div>
+        <p>Start with 30–60 well-understood features, then add one family at a time and keep only what improves grouped validation. The full menu below is about 150. Compute on raw, normalized, core-name and skeleton views; RapidFuzz makes this fast enough for millions of pairs on a laptop.</p>
+        <div class="table-wrap">
+          <table class="data wide">
+            <thead><tr><th>Group</th><th>Features</th></tr></thead>
+            <tbody>
+              <tr><td>Name strings</td><td>ratio, partial_ratio, token_sort, token_set, WRatio, Jaro-Winkler, normalized Levenshtein and Damerau, Jaccard on tokens and char 3-grams, Monge-Elkan, TF-IDF cosine (char and word)</td></tr>
+              <tr><td>Name weighting</td><td>IDF sum of shared tokens, IDF sum of <em>unmatched</em> tokens on each side (a strong negative), max IDF of an unmatched token, IDF of the rarest shared token</td></tr>
+              <tr><td>Name structure</td><td>Acronym match (IBM ↔ International Business Machines), token containment, first and last token equal, numeric tokens agree or conflict (7-Eleven), length ratio, token-count difference, legal form equal / differs / one missing, best similarity across trade names</td></tr>
+              <tr><td>Postcode</td><td>Equal, conflict, missing on one side, missing on both. First-3-digit agreement for region.</td></tr>
+              <tr><td>Premise numbers</td><td>Any shared, conflict (both have numbers, none shared), Jaccard of number sets</td></tr>
+              <tr><td>Street and address</td><td>Street similarity with numbers and street-type words removed, full-address TF-IDF cosine, token_set, landmark present / landmark similarity, main-address similarity without landmark, city-tail similarity, missing flags</td></tr>
+              <tr><td>Commonness</td><td>How many S1 records share this core name (per country), how many share this street and number. It tells the model when a name match is weak evidence (chains) and when an address match is weak (malls, office towers).</td></tr>
+              <tr><td>Cross-field</td><td>Name tokens found in the other record's address, embedding cosine (base and fine-tuned)</td></tr>
+              <tr><td>Provenance</td><td>Which blockers produced the pair and its rank in each. Free and usually among the top features.</td></tr>
+              <tr><td>Flags</td><td><code>source</code> (S2 or S3), same-country. Never one-hot the country.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- MODELS -->
+      <section id="models" aria-labelledby="models-h">
+        <div class="section-head">
+          <span class="eyebrow">Stages 05 – 07</span>
+          <h2 id="models-h">Models: a ranker, a reader and a referee</h2>
+        </div>
+        <div class="block">
+          <h3>Stage 1 · Pairwise GBDT <span class="chip hi">core</span></h3>
+          <p class="prose"><b>As built:</b> LightGBM alone for the filter and both stages, natural class balance, probabilities fed straight to the decoder; the rest of this paragraph is the original plan. CatBoost binary classifier on all candidate pairs (depth 5–8, learning rate 0.03–0.1, up to about 1,500 iterations with early stopping), with LightGBM as a second model for diversity. Add monotone constraints on the main similarities so higher similarity never lowers the match probability; this keeps the model sane on France. Keep the natural class balance for the final probabilities, because the decoder needs them calibrated. Per-entity weighting (equal total weight per S1 entity) is worth one experiment, with recalibration afterwards. After the first model, mine its confident false positives inside the training folds and retrain once.</p>
+        </div>
+        <div class="block">
+          <h3>Cross-encoder <span class="chip hi">Colab A100/H100</span></h3>
+          <p class="prose">Our weakest signal is India names (AUC 0.72–0.75, about 9% in Indic scripts), where a multilingual transformer reads what string metrics cannot. We fine-tune <code>xlm-roberta-base</code> (MIT, 278M) on raw lowercased <code>name | address</code> pairs in their original scripts, one epoch, bf16. It trains on a separate 10% of training entities, disjoint from the LightGBM work set, so its scores on the work set are out-of-sample without k-fold training. It then scores every kept work-set and test pair, and <code>ce_logit</code> becomes a feature in both LightGBM stages. It runs from <code>colab/cross_encoder.ipynb</code> through the Colab extension in VS Code, with data passed through Google Drive. In v3, <code>BAAI/bge-reranker-v2-m3</code> (Apache-2.0, ~568M) trains on the same entities in the background on the GPU and rescores only the pairs the base model is unsure about (probability 0.02–0.98) as a second feature. <code>candidate_pairs.tsv</code> is unchanged: the cross-encoder scores exactly the filtered set.</p>
+        </div>
+        <div class="block">
+          <h3>Stage 2 · Context features <span class="chip hi">core</span></h3>
+          <p class="prose">This is where the clustering idea earns its place. Built from stage-1 out-of-fold probabilities:</p>
+          <ul>
+            <li><strong>Entity view</strong> (for pair e, x): rank of x in e's list, gap to e's best, e's top-1 and top-2 probabilities, count of e's candidates above 0.5 and 0.8.</li>
+            <li><strong>Competition</strong>: x's best probability with any other S1 entity, whether e is x's best (mutual best), and the margin.</li>
+            <li><strong>Triangles</strong>: train the same pipeline on S2↔S3 pairs (positives are two records of the same S1). Feature: max over e's S3 candidates y of min(p(e,y), p(x,y)). If x's S3 twin is confidently e's, x probably is too.</li>
+            <li><strong>Same-source duplicates</strong>: x's similarity to e's other confident candidates from its own source.</li>
+          </ul>
+          <p class="prose">A second GBDT trains on pair features plus context features, then isotonic calibration on its out-of-fold predictions.</p>
+        </div>
+        <div class="block">
+          <h3>LLM referee <span class="chip lo">optional, Day 3</span></h3>
+          <p class="prose">Only for the uncertain band (stage-2 probability 0.3–0.7) and only if validation shows a gain. Use <code>Qwen/Qwen3-Reranker-4B</code> or <code>Qwen3-4B</code> (both Apache-2.0), scoring "same business? yes/no" and using the yes-probability as a feature. Llama and Gemma are out: their licenses aren't MIT or Apache.</p>
+          <p class="prose"><strong>Parameter budget.</strong> Until the organizers say otherwise, treat the 8B limit as a total across every neural model in the final system. Qwen3-8B has 8.2B parameters and fails on its own, and a 7B LLM plus a 0.57B reranker plus a 0.28B embedder also goes over. Keep a manifest of exact parameter counts and licenses taken from each model card. Quantization lowers memory, not parameter count.</p>
+        </div>
+      </section>
+
+      <!-- DECODE -->
+      <section id="decode" aria-labelledby="decode-h">
+        <div class="section-head">
+          <span class="eyebrow">Stage 08</span>
+          <h2 id="decode-h">Decoding: where F<sub>0.5</sub> is won</h2>
+        </div>
+        <ol>
+          <li><strong>Conflict resolution.</strong> If the hour-zero check confirms it, each S2/S3 record keeps only its highest-probability S1 entity. Alternatively, run a greedy global assignment: sort all pairs by probability and accept a pair only while its record is still free.</li>
+          <li><strong>Expected-F<sub>0.5</sub> subset per entity.</strong> Sort an entity's candidates by probability. For k = 0 … K compute the expected score of predicting the top k, where k = 0 is the empty list. Pick the best k. The positives among the top k and among the rest follow Poisson-binomial distributions, so this is exact and fast.</li>
+          <li><strong>Blocking misses.</strong> Fold the expected number of missed matches (from validation recall after the filter) into the "rest" distribution.</li>
+          <li><strong>Singleton gate (compare).</strong> An entity-level model for P(has any match) from top probabilities, counts and name commonness. Keep it only if it beats what the decoder already implies.</li>
+        </ol>
+        <div class="table-wrap">
+          <table class="data">
+            <thead><tr><th>Candidate probabilities</th><th>Empty</th><th>Top 1</th><th>Top 2</th><th>Top 3</th><th>Best choice</th></tr></thead>
+            <tbody>
+              <tr><td class="num">0.60</td><td class="num">0.400</td><td class="num win">0.600</td><td class="num">–</td><td class="num">–</td><td>Predict it</td></tr>
+              <tr><td class="num">0.45, 0.30</td><td class="num">0.385</td><td class="num win">0.427</td><td class="num">0.402</td><td class="num">–</td><td>Predict top 1, even below 0.5</td></tr>
+              <tr><td class="num">0.90, 0.50</td><td class="num">0.050</td><td class="num win">0.825</td><td class="num">0.728</td><td class="num">–</td><td>Skip the 0.50</td></tr>
+              <tr><td class="num">0.40, 0.40, 0.40</td><td class="num">0.216</td><td class="num">0.350</td><td class="num">0.410</td><td class="num win">0.436</td><td>Predict all three</td></tr>
+              <tr><td class="num">0.55, 0.20, 0.20</td><td class="num">0.288</td><td class="num win">0.514</td><td class="num">0.397</td><td class="num">0.351</td><td>Predict top 1</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="caption">Expected F<sub>0.5</sub> assuming independent, calibrated probabilities; verified by brute-force enumeration. With a first match at 0.95 / 0.90 / 0.80 / 0.70, a second is worth adding only above 0.69 / 0.66 / 0.59 / 0.52.</p>
+<pre><span class="kw">def</span> poisson_binomial(ps):
+    dist = [1.0]
+    <span class="kw">for</span> p <span class="kw">in</span> ps:
+        nxt = [0.0] * (len(dist) + 1)
+        <span class="kw">for</span> i, d <span class="kw">in</span> enumerate(dist):
+            nxt[i] += d * (1 - p); nxt[i + 1] += d * p
+        dist = nxt
+    <span class="kw">return</span> dist
+
+<span class="kw">def</span> f05(tp, n_true, k):
+    <span class="kw">if</span> n_true == 0 <span class="kw">and</span> k == 0: <span class="kw">return</span> 1.0
+    <span class="kw">if</span> k == 0 <span class="kw">or</span> tp == 0: <span class="kw">return</span> 0.0
+    <span class="kw">return</span> 1.25 * tp / (0.25 * n_true + k)
+
+<span class="kw">def</span> best_subset(cands):          <span class="cm"># cands: [(entity_id, calibrated_p), ...]</span>
+    cands = sorted(cands, key=<span class="kw">lambda</span> c: -c[1])
+    ps = [p <span class="kw">for</span> _, p <span class="kw">in</span> cands]
+    <span class="kw">def</span> score(k):
+        top, rest = poisson_binomial(ps[:k]), poisson_binomial(ps[k:])
+        <span class="kw">return</span> sum(top[a] * rest[b] * f05(a, a + b, k)
+                   <span class="kw">for</span> a <span class="kw">in</span> range(len(top)) <span class="kw">for</span> b <span class="kw">in</span> range(len(rest)))
+    k = max(range(len(ps) + 1), key=score)
+    <span class="kw">return</span> [eid <span class="kw">for</span> eid, _ <span class="kw">in</span> cands[:k]]</pre>
+        <p class="caption">Drop candidates below about 0.02 first; most entities are then left with fewer than six, and the cubic cost disappears. Keep a tuned two-threshold decoder as the baseline and ship whichever validates better.</p>
+      </section>
+
+      <!-- FRANCE -->
+      <section id="france" aria-labelledby="france-h">
+        <div class="section-head">
+          <span class="eyebrow">Unseen country</span>
+          <h2 id="france-h">France: generalize, then verify</h2>
+        </div>
+        <ul>
+          <li><strong>Country-neutral features only.</strong> Generic postcode and number handling, char n-grams, multilingual embeddings. "Same country" is the only country feature.</li>
+          <li><strong>Per-country IDF fitted on all records, test included.</strong> "rue", "sarl" and "avenue" become low-weight automatically, with no hand rules needed.</li>
+          <li><strong>A French seed list</strong> for legal forms, street types (rue, av, bd, pl, ch, imp, quai, rte, fbg, allée), saint/sainte, and articles as stopwords (de, du, des, la, le, l', d'). Split elisions: l'atelier → atelier.</li>
+          <li><strong>Leave-one-country-out validation.</strong> Train on US and score India, then the reverse. Features that collapse under the shift get dropped or constrained. This is our only offline proxy for France.</li>
+          <li><strong>Sanity checks on test France.</strong> Predicted singleton rate and candidate counts should resemble US and India. If France predicts 90% singletons, something upstream is broken, most likely the country label.</li>
+          <li><strong>A leaderboard probe.</strong> Two submissions that differ only in France predictions measure the France effect directly.</li>
+          <li><strong>What happened (27 Sep).</strong> France scored ~0.93 while India/US matched validation at ~0.985. Every model variant agreed on 96% of French predictions, so the loss was upstream: full French candidate lists (57% at the cap) dropped alias, domain and initials records, and the matcher rejected suffix copies because of the word itself.
+            <ul>
+              <li>The sibling bridge and the suffix/near-copy rules lifted France to ~0.942.</li>
+              <li>A same-address word-swap rule, true 90–94% in India/US, lost 0.0029 in France and was dropped.</li>
+            </ul>
+          </li>
+        </ul>
+      </section>
+
+      <!-- VALIDATION -->
+      <section id="validation" aria-labelledby="validation-h">
+        <div class="section-head">
+          <span class="eyebrow">Trust the local score</span>
+          <h2 id="validation-h">Validation protocol</h2>
+        </div>
+        <ul>
+          <li><strong>Metric first.</strong> Implement exact macro F<sub>0.5</sub> with singletons and unit-test it on the PDF example (0.714).</li>
+          <li><strong>Splits.</strong> Group each S1 entity with its true matches so an identity never straddles folds. Day 1: one grouped development split plus a small untouched audit split, stratified by country, singleton status and match count. From Day 2: grouped out-of-fold predictions for stacking (5 folds for the GBDT stages, 3 if a neural stage is too slow). The audit split is for finalists only. Run blocking on the full training gallery so every fold keeps realistic distractors, and add leave-one-country-out on top.</li>
+          <li><strong>No held-out records in training pairs.</strong> When fitting a fold, drop candidate pairs whose S2/S3 record belongs to a held-out entity.</li>
+          <li><strong>Don't force missed positives into training.</strong> Positives that blocking missed are the least similar ones. Adding them teaches the model to accept weak pairs it will never see at test time. Log them as blocking failures instead.</li>
+          <li><strong>Out-of-fold discipline.</strong> Every feature built from model predictions (context features, cross-encoder score, calibration) uses out-of-fold values on train and the full-train model on test.</li>
+          <li><strong>One scorecard per experiment.</strong> <code>experiments.csv</code> with commit hash, pair recall and oracle ceiling, macro F<sub>0.5</sub> overall / US / India / non-singletons, singleton false-positive rate, leave-one-country-out F<sub>0.5</sub>, candidates p50/p95, runtime, peak memory, and leaderboard score when submitted.</li>
+          <li><strong>Sanity floor.</strong> An all-empty prediction scores exactly the singleton share. Every model must beat it on both the singleton and non-singleton slices.</li>
+          <li><strong>Compare finalists with a paired bootstrap</strong> over S1 entities. A gain inside the noise band isn't worth extra complexity.</li>
+          <li><strong>Public leaderboard is a sample.</strong> When it disagrees with a 5-fold score, believe the folds.</li>
+        </ul>
+      </section>
+
+      <!-- TIMELINE -->
+      <section id="timeline" aria-labelledby="timeline-h">
+        <div class="section-head">
+          <span class="eyebrow">72 hours, IST</span>
+          <h2 id="timeline-h">Timeline</h2>
+        </div>
+        <p>Every stage ends in a submission, so there is always a working fallback. Hours count from when you start.</p>
+        <div class="days">
+          <article class="day">
+            <header><span class="eyebrow">Day 1 · Fri 25 Sep</span><h3>Foundation</h3></header>
+            <ol>
+              <li><span class="num">h 0–2</span><span>Repo, git, environment. Load data, run the eleven hour-zero checks, write down decisions.</span></li>
+              <li><span class="num">h 2–4</span><span>Metric, IO helpers, grouped development and audit splits, validator in the loop. Baseline: char TF-IDF top-1 per source plus threshold. <b>Sub 1.</b></span></li>
+              <li><span class="num">h 4–10</span><span>Normalization, blockers A, B, C, E, F, recall@K report.</span></li>
+              <li><span class="num">h 10–16</span><span>Learned filter v1, core pair features, CatBoost, threshold decoder. <b>Sub 2.</b></span></li>
+              <li><span class="num">h 16–20</span><span>Conflict resolution and expected-F<sub>0.5</sub> decoder. <b>Sub 3.</b></span></li>
+            </ol>
+          </article>
+          <article class="day">
+            <header><span class="eyebrow">Day 2 · Sat 26 Sep</span><h3>Power</h3></header>
+            <ol>
+              <li><span class="num">morning</span><span>Out-of-fold predictions, context features, stage-2 model, calibration. <b>Sub 6.</b></span></li>
+              <li><span class="num">midday</span><span>Embedding route, fine-tuned bi-encoder on GPU. Re-measure recall and re-tune the filter. <b>Sub 7.</b></span></li>
+              <li><span class="num">afternoon</span><span>Cross-encoder on Colab: train on a disjoint 10% of entities, score every kept pair, add <code>ce_logit</code> to both stages. <b>Sub 8.</b></span></li>
+              <li><span class="num">evening</span><span>France hardening, leave-one-country-out, S2↔S3 triangle model. <b>Subs 9–10</b> as the France probe.</span></li>
+            </ol>
+          </article>
+          <article class="day">
+            <header><span class="eyebrow">Day 3 · Sun 27 Sep</span><h3>Polish and ship</h3></header>
+            <ol>
+              <li><span class="num">morning</span><span>Ensemble CatBoost and LightGBM across seeds, tune the decoder, pick the filter's operating point from the size-versus-F<sub>0.5</sub> curve. <b>Sub 11.</b></span></li>
+              <li><span class="num">midday</span><span>Optional LLM referee on the uncertain band. <b>Sub 12–13</b> if it validates.</span></li>
+              <li><span class="num">18:00</span><span>Code freeze. Rerun the full pipeline from a clean environment using only the README. Validator must print PASS.</span></li>
+              <li><span class="num">18:00–22:00</span><span>Methodology document, zip package, final submissions. <b>Subs 14–15.</b></span></li>
+              <li><span class="num">22:00–23:59</span><span>Buffer. Nothing new ships after 22:00.</span></li>
+            </ol>
+          </article>
+        </div>
+      </section>
+
+      <!-- SUBMISSIONS -->
+      <section id="submissions" aria-labelledby="submissions-h">
+        <div class="section-head">
+          <span class="eyebrow">15 slots, unused slots expire daily</span>
+          <h2 id="submissions-h">Submission budget</h2>
+        </div>
+        <div class="slots">
+          <span class="slot-day">Day 1</span>
+          <div class="slot"><span class="num">01</span><b>Baseline, proves format</b></div>
+          <div class="slot"><span class="num">02</span><b>GBDT v1 + thresholds</b></div>
+          <div class="slot"><span class="num">03</span><b>Expected-F<sub>0.5</sub> decoder</b></div>
+          <div class="slot spare"><span class="num">04</span><b>Spare</b></div>
+          <div class="slot spare"><span class="num">05</span><b>Spare</b></div>
+          <span class="slot-day">Day 2</span>
+          <div class="slot"><span class="num">06</span><b>Stage 2 + context</b></div>
+          <div class="slot"><span class="num">07</span><b>Embedding blocking</b></div>
+          <div class="slot"><span class="num">08</span><b>Cross-encoder</b></div>
+          <div class="slot"><span class="num">09</span><b>France probe A</b></div>
+          <div class="slot"><span class="num">10</span><b>France probe B</b></div>
+          <span class="slot-day">Day 3</span>
+          <div class="slot"><span class="num">11</span><b>Ensemble</b></div>
+          <div class="slot"><span class="num">12</span><b>Tighter candidate filter</b></div>
+          <div class="slot spare"><span class="num">13</span><b>LLM referee, if it validates</b></div>
+          <div class="slot final"><span class="num">14</span><b>Final: best grouped-validation score</b></div>
+          <div class="slot final"><span class="num">15</span><b>Final: safest variant</b></div>
+        </div>
+        <p>Give each upload an immutable folder with both TSVs, their checksums, the run config, the commit, the local score and the reported score, and tag the commit (<code>sub-01</code> … <code>sub-15</code>). The guidelines require version history of every submission. Check how the portal's daily limit resets.</p>
+      </section>
+
+      <!-- PRIORITIES -->
+      <section id="priorities" aria-labelledby="priorities-h">
+        <div class="section-head">
+          <span class="eyebrow">If time runs short</span>
+          <h2 id="priorities-h">Priority ladder</h2>
+        </div>
+        <p>Build strictly in this order. Each rung is worth more than everything below it.</p>
+        <div class="table-wrap">
+          <table class="data">
+            <thead><tr><th>Rung</th><th>Why</th><th>Impact</th></tr></thead>
+            <tbody>
+              <tr><td>Valid submission, sane decoder</td><td>A rejected file scores nothing</td><td><span class="chip hi">high</span></td></tr>
+              <tr><td>Multi-route retrieval recall ≥ 99.5%</td><td>Caps everything downstream</td><td><span class="chip hi">high</span></td></tr>
+              <tr><td>Learned filter to small candidate sets</td><td>Now part of the final ranking</td><td><span class="chip hi">high</span></td></tr>
+              <tr><td>GBDT with rich string features</td><td>The workhorse of entity matching</td><td><span class="chip hi">high</span></td></tr>
+              <tr><td>Conflict resolution + expected-F<sub>0.5</sub></td><td>Direct metric gain at almost no cost</td><td><span class="chip hi">high</span></td></tr>
+              <tr><td>Context features, stage 2</td><td>Fixes chains and near-duplicate S1 entities</td><td><span class="chip md">medium</span></td></tr>
+              <tr><td>France hardening</td><td>Protects part of the private leaderboard</td><td><span class="chip md">medium</span></td></tr>
+              <tr><td>Cross-encoder</td><td>Semantic and transliteration errors strings miss</td><td><span class="chip md">medium</span></td></tr>
+              <tr><td>Ensembling</td><td>Stability on the private split</td><td><span class="chip lo">low</span></td></tr>
+              <tr><td>LLM referee</td><td>A small band of hard pairs, high cost</td><td><span class="chip lo">low</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="two">
+          <div>
+            <h3>Compute</h3>
+            <ul>
+              <li><strong>Laptop RTX 4060/5060 (8 GB)</strong>: TF-IDF, RapidFuzz, LightGBM, embedding inference, small cross-encoder runs with short sequences.</li>
+              <li><strong>Colab A100/H100 (team subscription)</strong>: cross-encoder training and scoring of every kept pair; later a dense retrieval route or the 4B reranker.</li>
+              <li><strong>CPU-only fallback</strong>: the lexical + GBDT system alone is competitive and must always be able to ship.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Team of four</h3>
+            <ul>
+              <li><strong>Teammate 1 · Validation and shipping</strong>: scorer, frozen split ids, transfer tests, experiment log, submissions (designated uploader), methodology.</li>
+              <li><strong>Teammate 2 · Normalization and blocking</strong>: text views, the six blockers, recall and oracle reports, candidate provenance.</li>
+              <li><strong>Teammate 3 · Features, GBDT and decoding</strong>: pair and context features, stages 1 and 2, calibration, expected-F<sub>0.5</sub> decoder.</li>
+              <li><strong>Teammate 4 · Neural</strong>: embeddings, cross-encoder, 4B reranker, GPU profiling, parameter and license manifest.</li>
+            </ul>
+            <p>Everyone reads and writes one pair table: <code>source1_entity_id</code>, <code>candidate_entity_id</code>, <code>fold_id</code>, route provenance, and the label on training rows.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- COMPLIANCE -->
+      <section id="compliance" aria-labelledby="compliance-h">
+        <div class="section-head">
+          <span class="eyebrow">Don't lose on paperwork</span>
+          <h2 id="compliance-h">Compliance and package checklist</h2>
+        </div>
+        <ul class="checks">
+          <li><span>No external APIs, geocoding, business registries or internet data. Pretrained open models are fine, since the rules explicitly limit their license and size. Hand-written abbreviation lists are code, not lookups; state them openly in the methodology.</span></li>
+          <li><span>Every model is MIT or Apache-2.0, and the neural models together stay under 8B parameters. Keep a manifest of exact counts and licenses.</span></li>
+          <li><span>Exactly one row per test S1 entity, no duplicate rows, no duplicate ids in a list, S2/S3 ids only, all ids exist in test, empty string for singletons.</span></li>
+          <li><span>Every matched id also appears in <code>candidate_pairs.tsv</code>, which is the exact set the model scored.</span></li>
+          <li><span><code>candidate_pairs.tsv</code> comes from the same run as the final <code>matching_results.tsv</code>. The methodology reports its size distribution, reduction ratio, recall ceiling, the size-versus-F<sub>0.5</sub> curve, and each route's complexity.</span></li>
+          <li><span><code>utils/validate_submission.py</code> prints PASS, run automatically at the end of the pipeline.</span></li>
+          <li><span>Zip layout: <code>output/</code> (both TSVs), <code>code/business_entity_resolution/</code> (<code>src/</code>, <code>README.md</code>, pinned <code>requirements.txt</code>), <code>Documentation_template.md</code>.</span></li>
+          <li><span>One command reproduces both outputs from the data. Seeds fixed, runtimes and hardware listed in the README.</span></li>
+          <li><span>Methodology covers approach, blocking strategy, model architecture and feature engineering. The guidelines mention a 1–2 page write-up and the problem statement a template with no page limit, so fill the template and open it with a one-page summary.</span></li>
+          <li><span>Git history with a tag per submission. One login per participant, desktop or laptop only.</span></li>
+        </ul>
+      </section>
+
+      <!-- RISKS -->
+      <section id="risks" aria-labelledby="risks-h">
+        <div class="section-head">
+          <span class="eyebrow">What goes wrong</span>
+          <h2 id="risks-h">Risks and mitigations</h2>
+        </div>
+        <div class="table-wrap">
+          <table class="data wide">
+            <thead><tr><th>Risk</th><th>Mitigation</th></tr></thead>
+            <tbody>
+              <tr><td>Chains and franchises (same name, many addresses)</td><td>Address-aware blockers, reverse blocking, name-commonness feature</td></tr>
+              <tr><td>Shared addresses (malls, towers)</td><td>Address-commonness feature, so the name decides</td></tr>
+              <tr><td>Near-duplicate but distinct S1 entities</td><td>One-S1-per-record conflict resolution, margin and mutual-best features</td></tr>
+              <tr><td>France distribution shift</td><td>Neutral features, monotone constraints, multilingual models, leave-one-country-out</td></tr>
+              <tr><td>The filter over-prunes France</td><td>Rank-based filter features next to raw scores, a leave-one-country-out check on filter recall and size, France's candidate-count distribution compared with US and India</td></tr>
+              <tr><td>Leakage in stacking inflates validation</td><td>Strict out-of-fold for every model-derived feature</td></tr>
+              <tr><td>Overfitting the public leaderboard</td><td>Choose by 5-fold score. Use the leaderboard for probes, not tuning.</td></tr>
+              <tr><td>Rejected file format</td><td>Validator in the pipeline, explicit <code>\n</code> line endings and UTF-8 on Windows</td></tr>
+              <tr><td>Running out of time</td><td>A submission at every stage, freeze at 18:00 Day 3</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- QUESTIONS -->
+      <section id="questions" aria-labelledby="questions-h">
+        <div class="section-head">
+          <span class="eyebrow">Ask early</span>
+          <h2 id="questions-h">Open questions</h2>
+        </div>
+        <ul>
+          <li><strong>For the organizers</strong> (via their Google Form): does the private leaderboard use your last submission or your best? This decides what slots 14 and 15 should be.</li>
+          <li><strong>For the organizers</strong>: may the final pipeline download pretrained weights at run time, or must they ship inside the zip?</li>
+          <li><strong>For the organizers</strong>: does the 8B limit apply to each model or to the total across the final system?</li>
+          <li><strong>For the organizers</strong>: how is candidate-set size weighed against F<sub>0.5</sub> in the final ranking: mean per entity, total pairs, or a tie-breaker?</li>
+        </ul>
+      </section>
+
+      <footer class="end">Built from the official problem statement and guidelines, then merged with the team's <code>WINNING_STRATEGY.md</code>, which stays the detailed rulebook for validation and compliance. Updated on 26 Sep for the organizers' announcement that smaller candidate sets rank higher. The dataset hadn't been downloaded when this was written, so the hour-zero checks decide which conditional steps apply. Decoder figures were computed and checked against brute-force enumeration.</footer>
+    </main>
+  </div>
+</div>
