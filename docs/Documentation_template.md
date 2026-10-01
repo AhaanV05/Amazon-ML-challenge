@@ -82,7 +82,10 @@ The main design choice is that every training entity goes through exactly the sa
 - (τ, r, k_max) = (0.001, 99, 15) is picked by a sweep on validation entities for the best ceiling under a budget of ≤16 candidates per entity.
 
 - **Blocking keys used:** normalized name tokens tied to place, normalized address, name+address, and name character 3-grams (per country, per source).
-- **Candidate pairs generated:** 31,571,667 test pairs, **18.2 per S1 entity** (from about 192M retrieved pairs). Train gets the same treatment: 33.6M pairs.
+- **Candidate pairs generated:** 31,571,667 test pairs from the learned filter (**18.2 per S1 entity**, from about 192M retrieved pairs), which are the pairs the rerankers and the LightGBM matcher score. Train gets the same treatment: 33.6M pairs.
+  - The sibling bridge (section 4) then adds 40,991 records to the S1 entities it links them to, in both output files.
+  - These were not in the filtered set, and a separate verifier scores them rather than the matcher.
+  - The submitted `candidate_pairs.tsv` therefore holds **31,612,658 pairs (18.25 per S1)**, and every matched ID in `matching_results.tsv` appears in it.
 - **How we ensured true matches were not lost:**
   - We measured the oracle ceiling at every stage on held-out train entities (the macro F0.5 of a perfect matcher restricted to the candidates).
   - Top-20 retrieval alone reached 0.9928. A study of 40,000 train entities showed that 92% of misses were outranked, not lexically absent. That led to the hard route and the leading-zero fix, which raised the ceiling to 0.9953.
