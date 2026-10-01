@@ -1,3 +1,4 @@
+# CPU pipeline. The GPU rerankers (torch, transformers, peft) are pinned in requirements-gpu.txt: install both.
 anyascii==0.3.3
 catboost==1.2.10
 indic_transliteration==2.3.82

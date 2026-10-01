@@ -26,6 +26,8 @@ Models are downloaded from the Hugging Face Hub at training time. No external da
 
 ## Data and folders
 
+`<project>` below is the folder that contains `code/`: in the submission zip, the zip root. Place the organizers' `Datasets/` folder there (so the TSVs are at `<project>/Datasets/student_resource/dataset/{train,test}/`), or set `BER_DATA_DIR`.
+
 | Variable | Meaning | Default |
 |---|---|---|
 | `BER_DATA_DIR` | Folder with `train/` and `test/` TSVs | `<project>/Datasets/student_resource/dataset` |
