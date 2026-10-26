@@ -147,7 +147,7 @@ The main design choice is that every training entity goes through exactly the sa
 | v5 | + Qwen3-Reranker-4B (LoRA) on the hardest pairs | 0.9860 (0.9833 / 0.9875) | – |
 | v5 + bridge + France suffix | Post-processing | +0.0008 from the bridge | 0.9790 |
 | v6 | Matcher trained on 100% of train entities | 0.9863 (0.9836 / 0.9881)¹ | – |
-| **v7 (final)** | v6 + bridge (four keys) + France suffix + France near-copies | 0.9870 (with bridge) | **0.9798** |
+| **v7 (final)** | v6 + bridge (four keys) + France suffix + France near-copies | 0.9870 (with bridge) | **0.9798** (final rank ≈ 1100) |
 | v7 + French word swaps (rejected) | Also claims French copies with one real word replaced | – | 0.9769 |
 
 ¹ Scored on v5's validation entities, for a like-for-like comparison.

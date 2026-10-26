@@ -2,7 +2,9 @@
 
 **Team Claudes Plan** — Ahaan Verma, Vishwaswarup Rath, Daksh Goel, Shivam Pawar (Manipal University Jaipur)
 
-Link every business in a clean reference list to its noisy copies in two other sources: about 1.7 million test businesses and 10 million candidate records, across India, the US and a third country, **France, that never appears in training**. The final submission scored **0.9798 macro F0.5** on the public leaderboard, and **0.9870** on 441k held-out India/US entities.
+Link every business in a clean reference list to its noisy copies in two other sources: about 1.7 million test businesses and 10 million candidate records, across India, the US and a third country, **France, that never appears in training**. The final submission scored **0.9798 macro F0.5** on the public leaderboard (final rank **≈ 1100**), and **0.9870** on 441k held-out India/US entities.
+
+The field was strong: around rank 500 the board sat at 0.983, and the leaders were above 0.99. This repository records what we built and what the gap to the top taught us, not a winning entry.
 
 This repository holds the full pipeline, the notebooks that ran it, the methodology write-up, and the analysis behind every decision, including the ideas that failed.
 
@@ -32,6 +34,34 @@ This repository holds the full pipeline, the notebooks that ran it, the methodol
 | *rejected* | v7 + French word-swap claims | – | 0.9769 |
 
 France (no labels) was measured on the leaderboard itself (see below). It went from about **0.93** to about **0.942**, while India/US sit at about 0.985.
+
+## Model metrics
+
+**Cross-encoders** (held-out pairs from entities each fold model never trained on; two folds per model):
+
+| Model | Scored on | Training pairs / fold | Held-out AUC | Held-out log-loss | Training time / fold |
+|---|---|---|---|---|---|
+| `xlm-roberta-base`, fold 0 | all candidate pairs | 2.91M | 0.99961 | 0.0203 | 23 min |
+| `xlm-roberta-base`, fold 1 | all candidate pairs | 2.91M | 0.99957 | 0.0210 | 23 min |
+| `bge-reranker-v2-m3`, fold 0 | the uncertain 5% (base p in 0.02–0.98) | 1.16M | 0.9798 | 0.1547 | 26 min |
+| `bge-reranker-v2-m3`, fold 1 | the uncertain 5% | 1.16M | 0.9792 | 0.1556 | 26 min |
+| `Qwen3-Reranker-4B` + LoRA (r=16), 2 folds | the hardest ≤700k pairs | 60k | not recorded | not recorded | 39 min for both folds |
+
+The large model's AUC is lower because it only sees pairs the base model already found hard. The LLM's held-out numbers were printed to a Colab log that wasn't saved; its effect is measured through the matcher below.
+
+**Matcher** (macro F0.5 on held-out India/US entities, after one-owner resolution and decoding):
+
+| Version | Stage 1 | Stage 2 (final) | Singleton accuracy | India | US |
+|---|---|---|---|---|---|
+| v3 | 0.9840 | 0.9853 | 0.993 | 0.9829 | 0.9869 |
+| v4 | 0.9847 | 0.9860 | 0.994 | 0.9832 | 0.9875 |
+| v5 (+ LLM feature) | 0.9847 | 0.9860 | 0.994 | 0.9833 | 0.9875 |
+| v6 (100% of train, same entities as v5) | 0.9848 | 0.9863 | 0.994 | 0.9836 | 0.9881 |
+| v7 = v6 + sibling bridge | – | **0.9870** | – | – | – |
+
+**Candidate generation:** filter keeps 15.2 candidates per entity on validation, with an oracle ceiling of **0.9948** (unfiltered retrieval: 112 per entity, ceiling 0.9953). On test, the submitted `candidate_pairs.tsv` holds 31.6M pairs, **18.25 per S1 entity**.
+
+**France** (no labels): about 0.93 for v3/v4, about 0.942 for v7, estimated from leaderboard probes (see below).
 
 ## How it works
 
@@ -77,6 +107,20 @@ S1, S2, S3 → normalize → sparse TF-IDF retrieval (4 routes, per country) →
 - **Bigger isn't automatically better.** The 4B LLM reranker was neutral on validation. The gains came from recall and from understanding how the data was generated.
 - **What the top teams (0.99+) likely had:** near-100% candidate recall (our lists capped a perfect matcher at 0.9948) and matching built around the generator's copy operations, which transfers to a new country.
 
+## Leaderboard history
+
+| Score | Submission |
+|---|---|
+| 0.9440 | v1 |
+| 0.9621 | v2 |
+| 0.9773 | v3 |
+| 0.9772 | v4 |
+| 0.9790 | v5 + bridge + France suffix |
+| **0.9798** | **v7 (final)** |
+| 0.9769 | v7 + French word swaps (rejected) |
+
+Final public-leaderboard rank: **≈ 1100** of a very large field.
+
 ## Repository layout
 
 ```text
@@ -91,6 +135,7 @@ docs/
   er-game-plan.html                the illustrated build plan
 WINNING_STRATEGY.md                the strategy rulebook with every measured decision, day by day
 scripts/make_package.py            builds the organizers' submission zip
+LICENSE                            MIT
 ```
 
 ## Reproducing
@@ -118,3 +163,7 @@ The final run used a Colab G4 runtime (48 cores, 176 GB RAM, one RTX PRO 6000 96
 | `BAAI/bge-reranker-v2-m3` | Apache-2.0 | 568M | cross-encoder on uncertain pairs |
 | `Qwen/Qwen3-Reranker-4B` + LoRA | Apache-2.0 | 4.0B | reranker on the hardest pairs |
 | LightGBM | MIT | – | candidate filter, matcher stages, bridge verifier |
+
+## License
+
+Code: [MIT](LICENSE). The competition data and organizer documents are not part of this repository and remain the property of the organizers.
