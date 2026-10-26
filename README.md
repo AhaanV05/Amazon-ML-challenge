@@ -10,6 +10,10 @@ This repository holds the full pipeline, the notebooks that ran it, the methodol
 
 ---
 
+## The competition
+
+Amazon ML Challenge 2026 was Amazon's largest ML challenge so far: **89,000+ registrations, 32,000+ teams, 72 hours** (25–27 September 2026). The task came from a problem Amazon's own scientists work on: decide whether two noisy, incomplete business records from different sources describe the same real-world entity, with no clean labels and no perfect data. We finished at rank **≈ 1100**, roughly the top 3–4% of the registered teams.
+
 ## The problem
 
 | | |
@@ -119,7 +123,7 @@ S1, S2, S3 → normalize → sparse TF-IDF retrieval (4 routes, per country) →
 | **0.9798** | **v7 (final)** |
 | 0.9769 | v7 + French word swaps (rejected) |
 
-Final public-leaderboard rank: **≈ 1100** of a very large field.
+Final public-leaderboard rank: **≈ 1100** of 32,000+ registered teams.
 
 ## Repository layout
 
